@@ -2,6 +2,9 @@
 
 import { useSession, signOut } from "next-auth/react";
 
+import AppCard from "@/components/common/AppCard";
+import AppButton from "@/components/common/AppButton";
+
 export default function Dashboard() {
   const { data: session, status } = useSession();
 
@@ -9,35 +12,37 @@ export default function Dashboard() {
     return <p className="text-center mt-10">Loading...</p>;
   }
 
-  
   if (!session) {
     return null;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md text-center">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      
+      <AppCard title={`Welcome, ${session.user?.name}`}>
         
-        <h1 className="text-2xl font-semibold text-gray-800">
-          Welcome, {session.user?.name}
-        </h1>
+        <div className="space-y-4 text-center">
+          
+          <p className="text-gray-500">
+            {session.user?.email}
+          </p>
 
-        <p className="text-gray-500 mb-6">
-          {session.user?.email}
-        </p>
+          <AppButton
+            variant="destructive"
+            className="w-full"
+            onClick={() =>
+              signOut({
+                callbackUrl: "/login",
+              })
+            }
+          >
+            Logout
+          </AppButton>
 
-        <button
-          className="cursor-pointer w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition"
-          onClick={() =>
-            signOut({
-              callbackUrl: "/login",
-            })
-          }
-        >
-          Logout
-        </button>
+        </div>
 
-      </div>
+      </AppCard>
+
     </div>
   );
 }

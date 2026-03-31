@@ -4,6 +4,13 @@ import { useState } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import AppCard from "@/components/common/AppCard";
+import InputField from "@/components/common/InputField";
+import AppButton from "@/components/common/AppButton";
 
 export default function Login() {
   const { data: session } = useSession();
@@ -81,67 +88,69 @@ useEffect(() => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-10">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-80">
-       
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => handleEmailChange(e.target.value)}
-          className={`border p-2 rounded ${
-            emailError ? "border-red-500" : "border-gray-300"
-          }`}
-        />
-        {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
-
-       
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => handlePasswordChange(e.target.value)}
-          className={`border p-2 rounded ${
-            passwordError ? "border-red-500" : "border-gray-300"
-          }`}
-        />
-        {passwordError && (
-          <p className="text-red-500 text-sm">{passwordError}</p>
-        )}
-
-       
-        {generalError && <p className="text-red-600 text-sm">{generalError}</p>}
-
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <form onSubmit={handleSubmit}>
         
-        <button
-          type="submit"
-          className="cursor-pointer bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          Login
-        </button>
-
-      
-        <button
-          type="button"
-          onClick={() => signIn("google", { prompt: "select_account" })}
-          className="cursor-pointer bg-red-500 text-white py-2 rounded hover:bg-red-600"
-        >
-          Google Login
-        </button>
-        <button
-  type="button"
-  onClick={() => signIn("facebook")}
-  className="cursor-pointer bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
->
-  Facebook Login
-</button>
-        <button
-  type="button"
-  onClick={() => signIn("github")}
-  className="cursor-pointer bg-gray-800 text-white py-2 rounded hover:bg-gray-900"
->
-  GitHub Login
-</button>
+        <AppCard title="Login" className="">
+        <div className="space-y-4">
+          {/* Email */}
+          <InputField
+            label="Email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e: any) => handleEmailChange(e.target.value)}
+            error={emailError}
+          />
+  
+          {/* Password */}
+          <InputField
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e: any) => handlePasswordChange(e.target.value)}
+            error={passwordError}
+          />
+  
+          {/* General Error */}
+          {generalError && (
+            <p className="text-red-600 text-sm">{generalError}</p>
+          )}
+  
+          {/* Login */}
+          <AppButton type="submit">
+            Login
+          </AppButton>
+  
+          {/* Social Logins */}
+          <AppButton
+            type="button"
+            className="bg-red-500 hover:bg-red-600 w-full"
+            onClick={() => signIn("google", { prompt: "select_account" })}
+          >
+            Google Login
+          </AppButton>
+  
+          <AppButton
+            type="button"
+            className="bg-blue-600 hover:bg-blue-700  w-full"
+            onClick={() => signIn("facebook")}
+          >
+            Facebook Login
+          </AppButton>
+  
+          <AppButton
+            type="button"
+            variant="secondary"
+            className=" w-full"
+            onClick={() => signIn("github")}
+          >
+            GitHub Login
+          </AppButton>
+  </div>
+        </AppCard>
+  
       </form>
     </div>
   );
