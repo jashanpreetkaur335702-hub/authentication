@@ -128,6 +128,20 @@ useEffect(() => {
         >
           Google Login
         </button>
+        <button
+  type="button"
+  onClick={() => signIn("facebook")}
+  className="cursor-pointer bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+>
+  Facebook Login
+</button>
+        <button
+  type="button"
+  onClick={() => signIn("github")}
+  className="cursor-pointer bg-gray-800 text-white py-2 rounded hover:bg-gray-900"
+>
+  GitHub Login
+</button>
       </form>
     </div>
   );
