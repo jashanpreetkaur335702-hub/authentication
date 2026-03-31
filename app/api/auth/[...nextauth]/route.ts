@@ -1,8 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-async function refreshAccessToken(token) {
+
+async function refreshAccessToken(token: any) {
   try {
     const res = await fetch("https://your-api.com/refresh", {
       method: "POST",
@@ -32,11 +33,12 @@ async function refreshAccessToken(token) {
   }
 }
 
-const handler = NextAuth({
+
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
           prompt: "select_account",
@@ -52,19 +54,19 @@ const handler = NextAuth({
       },
 
       async authorize(credentials) {
-        const { email, password } = credentials ;
+        if (!credentials) return null;
 
-      
+        const { email, password } = credentials;
+
+        // Mock login
         if (email === "test@gmail.com" && password === "123456") {
           return {
             id: "1",
             name: "Test User",
             email: "test@gmail.com",
-
-        
             accessToken: "mock-access-token",
             refreshToken: "mock-refresh-token",
-            accessTokenExpires: Date.now() + 60 * 60 * 1000, 
+            accessTokenExpires: Date.now() + 60 * 60 * 1000,
           };
         }
 
@@ -82,32 +84,34 @@ const handler = NextAuth({
   },
 
   callbacks: {
-   async jwt({ token, user }) {
-  if (user) {
-    return {
-      ...token,
-      ...user,
-      accessToken: user.accessToken,
-      refreshToken: user.refreshToken,
-      accessTokenExpires: user.accessTokenExpires,
-    };
-  }
+    async jwt({ token, user }) {
+      // First login
+      if (user) {
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.accessTokenExpires = user.accessTokenExpires;
+      }
 
-  if (Date.now() < token.accessTokenExpires) {
-    return token;
-  }
+      // If token still valid
+      if (Date.now() < (token.accessTokenExpires ?? 0)) {
+        return token;
+      }
 
-  return await refreshAccessToken(token);
-},
+      // Refresh token
+      return await refreshAccessToken(token);
+    },
 
     async session({ session, token }) {
-      session.user = token ;
+      session.user = token;
       session.accessToken = token.accessToken;
       session.error = token.error;
 
       return session;
     },
   },
-});
+};
+
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
